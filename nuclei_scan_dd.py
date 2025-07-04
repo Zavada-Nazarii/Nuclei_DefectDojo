@@ -126,7 +126,7 @@ def run_subfinder(target_domain, use_proxychains=False):
 # Функція для пошуку engagement за головним доменом
 def get_existing_engagement(defectdojo_url, api_key, target_root_domain):
     headers = {"Authorization": f"Token {api_key}"}
-    response = requests.get(f"{defectdojo_url}/api/v2/engagements/?product=2", headers=headers)
+    response = requests.get(f"{defectdojo_url}/api/v2/engagements/?product=2&limit=1000", headers=headers)
 
     if response.status_code == 200:
         try:
