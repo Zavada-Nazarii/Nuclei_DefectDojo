@@ -258,10 +258,14 @@ def main():
     input_file = "urls.txt"
 
     args = sys.argv[1:]
-    
+
     use_proxychains_for_subfinder = '--subfinder-proxychains' in args
     if use_proxychains_for_subfinder:
         args.remove('--subfinder-proxychains')
+
+    force_proxy_tor = '--proxyTor' in args
+    if force_proxy_tor:
+        args.remove('--proxyTor')
 
     all_targets_for_nuclei = set() # Використовуємо set для унікальних цілей
 
@@ -341,12 +345,16 @@ def main():
         report_path = f"{current_url_root_domain}_nuclei_report.json"
 
         # Виконання сканування Nuclei
-        if check_availability(url):
-            print(f"Ресурс {url} доступний. Виконуємо сканування.")
-            run_nuclei(url, report_path)
-        else:
-            print(f"Ресурс {url} недоступний. Виконуємо сканування через ProxyChains.")
+        if force_proxy_tor:
+            print(f"[Main] Параметр --proxyTor увімкнено. Сканування {url} через ProxyChains.")
             run_nuclei_with_proxychains(url, report_path)
+        else:
+            if check_availability(url):
+                print(f"Ресурс {url} доступний. Виконуємо сканування.")
+                run_nuclei(url, report_path)
+            else:
+                print(f"Ресурс {url} недоступний. Виконуємо сканування через ProxyChains.")
+                run_nuclei_with_proxychains(url, report_path)
 
         # Перевірка наявності звіту
         if not os.path.exists(report_path) or os.path.getsize(report_path) == 0:
@@ -378,4 +386,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
